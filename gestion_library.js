@@ -24,9 +24,7 @@ last_Name: "Hadi"
 ];
 
 let emprunts = [
-{ empruntId: 1, id_livre: "123", dateEmprunt: "2025-09-22" },
-{ empruntId: 2, id_livre: "2", dateEmprunt: "2025-09-22" },
- {empruntId: 2, id_livre: "3", dateEmprunt: "2025-09-22" },
+
 
 ];
 
@@ -53,6 +51,7 @@ let pub_year = prompt('enter year of publication : ');
     }
 
     library.push(newBook);
+    console.log('book added successfully !');
 }
 
 
@@ -66,14 +65,18 @@ function addBooks(){
 };
 
 
+
+
 // DISPLAY OR READ ALL BOOKS :
 
 function displayAllBooks(){
     library.forEach(book => {
         console.log("**********************************************************************")
-        console.log(book.id_livre + " Book's title " + book.titre + " written By  " + book.autor + ", year of publication :" + book.pub_year + "disponibme " + book.disponible );
+        console.log(book.id_livre + " Book's title " + book.titre + " written By " + book.autor + " , the year of publication :" + book.pub_year + ", availble : " + book.disponible );
     });
 };
+
+
 
 
 //  DISPLAY BOOKS (ascendant/descendant) :
@@ -84,7 +87,7 @@ function bookByAsc_des(){
     if(state == 'asc'){
             book = library.sort((a,b) => a.titre.localeCompare(b.titre));
     }else if(state == 'desc'){
-    book = library.sort((a,b) => b.pub_year - a.pub_year);
+    book = library.sort((a,b) => b.titre.localeCompare(a.titre));
 
     }else{
         book = 'invalid state !!'
@@ -98,7 +101,7 @@ function bookByAsc_des(){
 
 function bookByPubYear(){
     let book;
-    book = library.sort((a,b) => a.pub_year - b.pub_year);
+    book = library.sort((a,b) => b.pub_year - a.pub_year);
     return book;
 }
 
@@ -106,14 +109,13 @@ function bookByPubYear(){
 
 function displayAvailbleBooks(){
     let availbleBook;
-  
     availbleBook = library.filter((book) => book.disponible == true)
 if(availbleBook.length > 0){
     availbleBook.forEach(book => {
     console.log(book.titre + " By "+ book.autor + " is availble currently")
     });
 }else{
-    console.log('no availble books currently')
+    console.log("no book is availble currently !!")
 }
    
 }
@@ -143,6 +145,7 @@ first_Name : user_Name,
 last_Name: user_familly_Name
     }
     abonnee.push(newSubscriber);
+    console.log('subscriber added successfully !');
 
 }
 
@@ -158,19 +161,22 @@ function displayAllSubscribers(){
         console.log("**********************************************************************")
         console.log(user);
     });
+   }else{
+    console.log("no User Found !!");
    }
-  
 };
+
 
 // REGISTER A NEW BORROWING :
 
 function newBorrowing(){
+
     //get user and book id from the user
     let userId = prompt('enter subscriber ID : ');
     let bookId = prompt('enter Book ID : ');
 
 // check if the id's are availble
-    let checkUser = abonnee.find((user) => user.id_abonnee == userId);
+    let checkUser = abonnee.find((user) => user.subscriber_Id == userId);
     let check_book = library.find((book) => book.id_livre == bookId);
 
 // get Current Date
@@ -187,62 +193,56 @@ let emprunt = {
     dateEmprunt : currentDate
 };
 
-
-if(check_book.id_livre == bookId){
+if(checkUser && check_book && check_book.disponible){   
     check_book.disponible = false;
     emprunts.push(emprunt);
-    console.log(check_book.titre + ' book took succesfully by ' )
+    console.log('the book ' + check_book.titre + ' is being borrowed by ' + checkUser.first_Name + " "+ checkUser.last_Name)
+    
 }else{
-    console.log('errore');
+    console.log('User or Book not found !! ')
 }
-
-
-
-
-   
 }
 
 
 // REGISTER A RETURN
 
-
 function registerReturn(){
     let userId = prompt('enter BORROWING ID : ');
     let bookId = prompt('enter RETURN Book ID : ');
 
-
-    let checkUser = abonnee.find((user) => user.id_abonnee == userId);
+    let checkUser = abonnee.find((user) => user.subscriber_Id == userId);
     let check_book = library.find((book) => book.id_livre == bookId);
 
- 
-    if(checkUser && check_book){
-      
-            if(check_book.disponible == false){
-                checkUser.disponible = true;
-                  console.log('the book has been returned by ' + checkUser.first_Name)
+    if(checkUser){
+        if(check_book){
+                 if(!check_book.disponible){
+                 check_book.disponible = true;
+                  console.log(check_book.titre + ' Book has been returned by ' + checkUser.first_Name)
             }
-       
-       
-    } 
-     
+        }else{
+            console.log('Book not found !! ')
+        }
+           
+    }else{
+        console.log('User not found !! ')
+    }
 }
 
 // Show all books borrowed by a given subscriber 
 
 function booksBorrowedBySubscriber(){
 let userId = prompt('enter user id : ');
-let getUser = emprunts.filter((emprunt) => emprunt.abonneId == userId);
-let borrowedBook = getUser.map( record => {
-    return library.find( book => book.id_livre == record.id_livre)});
+let getUser = abonnee.find((abonne) => abonne.subscriber_Id == userId);
+let findEmprunt = emprunts.filter((emprunt) => emprunt.abonneid == getUser.subscriber_Id)
+let foundBook;
 
- if (borrowedBook.length === 0) {
-    console.log("No books borrowed by this user.");
-  } else {
-    console.log("Books borrowed by user " + userId + ": ");
-    borrowedBook.forEach(book => console.log("book's Title : " + book.titre + " Written By : " + book.autor + " in " + book.pub_year));
-  }
+if(getUser){
+findEmprunt.forEach(emp => {
+      foundBook = library.find(book => emp.bookid == book.id_livre)
+      console.log(foundBook.id_livre + " " +foundBook.titre + " Book has been borrowed by " + getUser.first_Name + " " + getUser.last_Name + "  Written By  " + foundBook.autor + " , Date of Publication : " + foundBook.pub_year)
 
-
+});
+}
 }
 
 
@@ -350,7 +350,7 @@ function library_management(){
                                     registerReturn()
                                     break;
                                     case '5':
-                                      console.log(booksBorrowedBySubscriber())
+                                      booksBorrowedBySubscriber();
                                         break;
                                     case '0':
                                     m;
@@ -360,16 +360,17 @@ function library_management(){
                                 break;
                             }
          break;  
-         case '9':
-       console.log("9")
+         case '0':
+       m = 0
         break;
+       
         
         default:
-            console.log('invalid Input !!! ')
+            console.log('invalid input !!');
             break;
     }
     
-}while(m != 0)
+}while(m != 0 );
     }
 
 
