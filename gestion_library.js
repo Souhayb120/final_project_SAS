@@ -7,16 +7,27 @@
 var prompt = require('prompt-sync')();
 
 let library = [
-    {id_livre : 1 , titre:'zn book' , pub_year :1999, autor:'mohammed',disponible:false},
-    {id_livre : 2 , titre:'bevel' ,pub_year :2014, autor:'yassine',disponible:true}
+    {
+        id_livre: 1,
+        titre:"just a film",
+        pub_year:1999,
+        autor:"mohammed",
+        disponible:true
+    }
 ]
 let abonnee = [
-    {id_abonnee : 1 , nom:'zn book' , prenom:'mohammed'},
-    {id_abonnee : 2 , nom:'bevel' , prenom:'yassine',}
+{
+subscriber_Id : 1,
+first_Name : "souhayb",
+last_Name: "Hadi"
+    }
 ];
 
 let emprunts = [
-{ abonneId: 1, id_livre: "123", dateEmprunt: "2025-09-22" }
+{ empruntId: 1, id_livre: "123", dateEmprunt: "2025-09-22" },
+{ empruntId: 2, id_livre: "2", dateEmprunt: "2025-09-22" },
+ {empruntId: 2, id_livre: "3", dateEmprunt: "2025-09-22" },
+
 ];
 
 
@@ -60,7 +71,7 @@ function addBooks(){
 function displayAllBooks(){
     library.forEach(book => {
         console.log("**********************************************************************")
-        console.log(book.id_livre + " Book's title " + book.titre + " written By  " + book.autor + ", year of publication :" + book.pub_year + " " + (book.disponible ? " is availble " : "not availble"));
+        console.log(book.id_livre + " Book's title " + book.titre + " written By  " + book.autor + ", year of publication :" + book.pub_year + "disponibme " + book.disponible );
     });
 };
 
@@ -96,9 +107,15 @@ function bookByPubYear(){
 function displayAvailbleBooks(){
     let availbleBook;
   
-    availbleBook = library.filter((book) => book.disponible != false)
-
-    return availbleBook;
+    availbleBook = library.filter((book) => book.disponible == true)
+if(availbleBook.length > 0){
+    availbleBook.forEach(book => {
+    console.log(book.titre + " By "+ book.autor + " is availble currently")
+    });
+}else{
+    console.log('no availble books currently')
+}
+   
 }
 
 // SEARCH BOOK BY IT's UNIQUE ID :
@@ -121,11 +138,12 @@ function AddSubscriber(){
     let user_Name = prompt('enter your first Name : ');
      let user_familly_Name = prompt('enter your last Name : ');
     let newSubscriber = {
-        subscriber_Id : abonnee.length + 1,
+subscriber_Id : abonnee.length + 1,
 first_Name : user_Name,
 last_Name: user_familly_Name
     }
     abonnee.push(newSubscriber);
+
 }
 
 
@@ -133,11 +151,15 @@ last_Name: user_familly_Name
 
 
 function displayAllSubscribers(){
-    console.log('search result ' + library.length + ' Books \n')
-    abonnee.forEach(user => {
+    console.log('search result ' + abonnee.length > 0 ? abonnee.length + ' user found \n' : "no User Found")
+   
+   if(abonnee.length > 0){
+  abonnee.forEach(user => {
         console.log("**********************************************************************")
-        console.log(user.id_abonnee + " Subscriber's Full Name " + user.nom + "  " + user.prenom);
+        console.log(user);
     });
+   }
+  
 };
 
 // REGISTER A NEW BORROWING :
@@ -164,15 +186,20 @@ let emprunt = {
     bookid : bookId,
     dateEmprunt : currentDate
 };
-    if(checkUser && check_book){
-        library.forEach(book => {
-            if(book.id_livre == bookId){
-                book.disponible = false;
-             emprunts.push(emprunt);
-            }
-        });
-      
-    } 
+
+
+if(check_book.id_livre == bookId){
+    check_book.disponible = false;
+    emprunts.push(emprunt);
+    console.log(check_book.titre + ' book took succesfully by ' )
+}else{
+    console.log('errore');
+}
+
+
+
+
+   
 }
 
 
@@ -189,13 +216,12 @@ function registerReturn(){
 
  
     if(checkUser && check_book){
-        library.forEach(book => {
-            if(book.id_livre == bookId){
-                book.disponible = true;
-                  
+      
+            if(check_book.disponible == false){
+                checkUser.disponible = true;
+                  console.log('the book has been returned by ' + checkUser.first_Name)
             }
-        });
-        
+       
        
     } 
      
@@ -206,16 +232,18 @@ function registerReturn(){
 function booksBorrowedBySubscriber(){
 let userId = prompt('enter user id : ');
 let getUser = emprunts.filter((emprunt) => emprunt.abonneId == userId);
-//let getBooks = emprunts.filter((emprunt) => emprunt.id_livre == getUser);
+let borrowedBook = getUser.map( record => {
+    return library.find( book => book.id_livre == record.id_livre)});
+
+ if (borrowedBook.length === 0) {
+    console.log("No books borrowed by this user.");
+  } else {
+    console.log("Books borrowed by user " + userId + ": ");
+    borrowedBook.forEach(book => console.log("book's Title : " + book.titre + " Written By : " + book.autor + " in " + book.pub_year));
+  }
 
 
 }
-
-
-
-
-
-
 
 
 
@@ -301,7 +329,7 @@ function library_management(){
             console.log(bookByPubYear())
             break;
         case '6':
-           console.log(displayAvailbleBooks()) 
+           displayAvailbleBooks()
         break;
              case '7':
             console.log(findBookById())
@@ -313,7 +341,7 @@ function library_management(){
                               AddSubscriber();
                               break;
                               case '2':
-                                displayAllSubscribers();
+                               displayAllSubscribers();
                               break;
                               case '3':
                                 newBorrowing();
@@ -322,7 +350,7 @@ function library_management(){
                                     registerReturn()
                                     break;
                                     case '5':
-
+                                      console.log(booksBorrowedBySubscriber())
                                         break;
                                     case '0':
                                     m;
