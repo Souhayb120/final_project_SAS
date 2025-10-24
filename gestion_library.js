@@ -9,9 +9,9 @@ var prompt = require('prompt-sync')();
 let library = [
     {
         id_livre: 1,
-        titre:"just a film",
+        titre:"Eat that frog",
         pub_year:1999,
-        autor:"mohammed",
+        autor:"Brian Tracy",
         disponible:true
     }
 ]
@@ -23,10 +23,7 @@ last_Name: "Hadi"
     }
 ];
 
-let emprunts = [
-
-
-];
+let emprunts = [];
 
 
 
@@ -239,7 +236,7 @@ let foundBook;
 if(getUser){
 findEmprunt.forEach(emp => {
       foundBook = library.find(book => emp.bookid == book.id_livre)
-      console.log(foundBook.id_livre + " " +foundBook.titre + " Book has been borrowed by " + getUser.first_Name + " " + getUser.last_Name + "  Written By  " + foundBook.autor + " , Date of Publication : " + foundBook.pub_year)
+      console.log(foundBook.id_livre + " " +foundBook.titre + " Book has been borrowed by " + getUser.first_Name + " " + getUser.last_Name + "  Written By  " + foundBook.autor + " , Date of Publication : " + foundBook.pub_year + " , data of brrowing : " + emp.dateEmprunt)
 
 });
 }
@@ -374,4 +371,6 @@ function library_management(){
     }
 
 
+
+// START THE LIBRARY MANAGEMENT SYSTEM
 library_management();
